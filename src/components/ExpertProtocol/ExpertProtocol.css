@@ -1,0 +1,67 @@
+/* ExpertProtocol component styles */
+.expert-protocol {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.expert-protocol h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.protocol-content {
+  color: #666;
+  line-height: 1.5;
+}
+
+.protocol-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.protocol-item {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  align-items: flex-start;
+}
+
+.protocol-item:last-child {
+  border-bottom: none;
+}
+
+.protocol-number {
+  color: #007bff;
+  font-weight: 600;
+  margin-right: 8px;
+  min-width: 20px;
+}
+
+.protocol-text {
+  flex: 1;
+  color: #333;
+  font-size: 0.9em;
+}
+
+.empty-protocol {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .protocol-list {
+    max-height: 200px;
+  }
+}
