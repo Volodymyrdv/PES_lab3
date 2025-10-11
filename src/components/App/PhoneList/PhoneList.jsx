@@ -16,7 +16,6 @@ const PhoneList = ({ phones, onPhoneReorder, onPhoneRemove }) => {
 
   const handleRemovePhone = (phone, index, e) => {
     e.stopPropagation();
-    console.log(`Видалення телефону "${phone.phone}" з ранжування`);
     onPhoneRemove(phone);
   };
 

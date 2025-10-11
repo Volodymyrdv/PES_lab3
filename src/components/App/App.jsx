@@ -26,7 +26,6 @@ const App = () => {
     navigate('/lab3');
   };
 
-  console.log(expertsData);
   return (
     <div>
       {originalPhones.length === 0 ? (

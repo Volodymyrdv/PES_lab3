@@ -9,7 +9,6 @@ const ComparisonMatrix = ({ matrix }) => {
 
   const downloadCSV = () => {
     if (!matrix || matrix.length === 0) {
-      console.log('Матриця порожня. Неможливо завантажити CSV.');
       return;
     }
 

@@ -8,17 +8,54 @@ export const SessionProvider = ({ children }) => {
   const [expertsCount, setExpertsCount] = useState(3);
   const [expertsData, setExpertsData] = useState({});
 
+  const generateInitialMatrix = (n) => {
+    const m = [];
+    for (let i = 0; i < n; i++) {
+      const row = [];
+      for (let j = 0; j < n; j++) {
+        if (i === j) row.push(0);
+        else if (i < j) row.push(1);
+        else row.push(-1);
+      }
+      m.push(row);
+    }
+    return m;
+  };
+
+  const matrixUpdate = (newPhones) => {
+    // newPhones is the expert's current ordered phones array
+    const n = newPhones.length;
+    const m = [];
+    for (let i = 0; i < n; i++) {
+      const row = [];
+      for (let j = 0; j < n; j++) {
+        if (i === j) row.push(0);
+        else row.push(1);
+      }
+      m.push(row);
+    }
+    for (let i = 0; i < n; i++) {
+      for (let k = i; k > 0; k--) {
+        // assume phone ids start from 1
+        m[newPhones[i].id - 1][newPhones[k - 1].id - 1] = -1;
+      }
+    }
+    return m;
+  };
+
   const handleDataLoad = (data, expertsCountParam) => {
     setOriginalPhones(data);
     setExpertsCount(expertsCountParam);
     setCurrentExpert('expert1');
 
     const updatedExpertsData = {};
+    const n = data.length;
     for (let i = 1; i <= expertsCountParam; i++) {
       const expertKey = `expert${i}`;
       updatedExpertsData[expertKey] = {
         phones: [...data],
-        protocol: []
+        protocol: [],
+        matrix: generateInitialMatrix(n)
       };
     }
     setExpertsData(updatedExpertsData);
@@ -42,9 +79,11 @@ export const SessionProvider = ({ children }) => {
       [currentExpert]: {
         ...prevData[currentExpert],
         phones: reorderedPhones,
-        protocol: [...prevData[currentExpert].protocol, protocolEntry]
+        protocol: [...prevData[currentExpert].protocol, protocolEntry],
+        matrix: matrixUpdate(reorderedPhones)
       }
     }));
+    console.log(expertsData);
   };
 
   const handlePhoneRemove = (phoneToRemove) => {
@@ -61,7 +100,8 @@ export const SessionProvider = ({ children }) => {
       [currentExpert]: {
         ...prevData[currentExpert],
         phones: updatedPhones,
-        protocol: [...prevData[currentExpert].protocol, protocolEntry]
+        protocol: [...prevData[currentExpert].protocol, protocolEntry],
+        matrix: matrixUpdate(updatedPhones)
       }
     }));
   };
@@ -150,6 +190,7 @@ export const SessionProvider = ({ children }) => {
         getCurrentExpertData,
         handlePhoneReorder,
         handlePhoneRemove,
+        matrixUpdate,
         exportRankingsToCSV
       }}
     >

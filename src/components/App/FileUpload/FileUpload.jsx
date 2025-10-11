@@ -20,7 +20,6 @@ const FileUpload = ({ onDataLoad }) => {
 
   const handleSubmit = () => {
     if (!selectedFile) {
-      console.log('Будь ласка, оберіть файл!');
       return;
     }
 
