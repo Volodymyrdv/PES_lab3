@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import FileUpload from '../FileUpload/FileUpload';
-import PhoneList from '../PhoneList/PhoneList';
-import ExpertProtocol from '../ExpertProtocol/ExpertProtocol';
-import ExpertList from '../ExpertList/ExpertList';
+import FileUpload from './FileUpload/FileUpload';
+import PhoneList from './PhoneList/PhoneList';
+import ExpertProtocol from './ExpertProtocol/ExpertProtocol';
+import ExpertList from './ExpertList/ExpertList';
 import './App.css';
 
 const App = () => {
@@ -142,7 +142,7 @@ const App = () => {
       console.error('❌ Помилка при експорті файлу. Спробуйте ще раз.');
     }
   };
-
+  console.log(expertsData);
   return (
     <div>
       {originalPhones.length === 0 ? (
