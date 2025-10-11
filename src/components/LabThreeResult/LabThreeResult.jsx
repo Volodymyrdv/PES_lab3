@@ -1,5 +1,16 @@
+import { useNavigate } from 'react-router';
+import { useContext } from 'react';
+import { SessionContext } from '../../context/SessionContext';
+
 const LabThreeResult = () => {
-  return <div>Check is it works</div>;
+  const navigate = useNavigate();
+  const { expertsData } = useContext(SessionContext);
+  return (
+    <div>
+      <p>{JSON.stringify(expertsData)}</p>
+      <button onClick={() => navigate(-1)}>Go Back</button>
+    </div>
+  );
 };
 
 export default LabThreeResult;

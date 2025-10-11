@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import './ExpertList.css';
+import { SessionContext } from '../../../context/SessionContext';
 
 const ExpertList = ({ currentExpert, onExpertChange, expertsCount }) => {
+  const session = useContext(SessionContext);
+
+  const effectiveCurrentExpert = session?.currentExpert || currentExpert;
+  const effectiveOnExpertChange = session?.handleExpertChange || onExpertChange;
+  const effectiveExpertsCount = session?.expertsCount || expertsCount;
   const generateExperts = (count) => {
     const experts = [];
     for (let i = 1; i <= count; i++) {
@@ -13,16 +19,21 @@ const ExpertList = ({ currentExpert, onExpertChange, expertsCount }) => {
     return experts;
   };
 
-  const experts = generateExperts(expertsCount || 3);
+  const experts = generateExperts(effectiveExpertsCount || 3);
 
   const handleChange = (e) => {
-    onExpertChange(e.target.value);
+    effectiveOnExpertChange(e.target.value);
   };
 
   return (
     <div className='expert-selector'>
       <h3>Оберіть експерта:</h3>
-      <select id='expert' value={currentExpert} onChange={handleChange} className='expert-select'>
+      <select
+        id='expert'
+        value={effectiveCurrentExpert}
+        onChange={handleChange}
+        className='expert-select'
+      >
         {experts.map((expert) => (
           <option key={expert.id} value={expert.id}>
             {expert.name}
@@ -31,12 +42,13 @@ const ExpertList = ({ currentExpert, onExpertChange, expertsCount }) => {
       </select>
       <div className='current-expert-info'>
         <span>
-          Поточний експерт: <strong>{experts.find((e) => e.id === currentExpert)?.name}</strong>
+          Поточний експерт:{' '}
+          <strong>{experts.find((e) => e.id === effectiveCurrentExpert)?.name}</strong>
         </span>
       </div>
       <div className='experts-count-info'>
         <span>
-          Загальна кількість експертів: <strong>{expertsCount}</strong>
+          Загальна кількість експертів: <strong>{effectiveExpertsCount}</strong>
         </span>
       </div>
     </div>

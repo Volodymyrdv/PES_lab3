@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import './FileUpload.css';
+import { SessionContext } from '../../../context/SessionContext';
 
 const FileUpload = ({ onDataLoad }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [expertsCount, setExpertsCount] = useState(3);
+  const session = useContext(SessionContext);
+
+  const effectiveOnDataLoad = session?.handleDataLoad || onDataLoad;
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -24,7 +28,7 @@ const FileUpload = ({ onDataLoad }) => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        onDataLoad(data, expertsCount);
+        effectiveOnDataLoad(data, expertsCount);
       } catch (error) {
         console.error('Error parsing JSON:', error);
         console.error('Помилка при читанні файлу. Перевірте формат JSON.');
