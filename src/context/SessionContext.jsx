@@ -23,7 +23,6 @@ export const SessionProvider = ({ children }) => {
   };
 
   const matrixUpdate = (newPhones) => {
-    // newPhones is the expert's current ordered phones array
     const n = newPhones.length;
     const m = [];
     for (let i = 0; i < n; i++) {
@@ -43,6 +42,15 @@ export const SessionProvider = ({ children }) => {
     return m;
   };
 
+  const generateRanks = (phones) => {
+    const n = phones.length;
+    const ranks = Array(n).fill(0);
+    for (let i = 0; i < n; i++) {
+      ranks[phones[i].id - 1] = i + 1;
+    }
+    return ranks;
+  };
+
   const handleDataLoad = (data, expertsCountParam) => {
     setOriginalPhones(data);
     setExpertsCount(expertsCountParam);
@@ -55,7 +63,8 @@ export const SessionProvider = ({ children }) => {
       updatedExpertsData[expertKey] = {
         phones: [...data],
         protocol: [],
-        matrix: generateInitialMatrix(n)
+        matrix: generateInitialMatrix(n),
+        ranks: generateRanks(data)
       };
     }
     setExpertsData(updatedExpertsData);
@@ -69,6 +78,28 @@ export const SessionProvider = ({ children }) => {
     return expertsData[currentExpert] || { phones: [], protocol: [] };
   };
 
+  const getRankfromExpertData = () => {
+    const ranks = [];
+    const keys = Object.keys(expertsData).sort();
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const expert = expertsData[key];
+      ranks.push(expert?.ranks || []);
+    }
+    return ranks;
+  };
+
+  const getMatrixFromExpertData = () => {
+    const matrix = [];
+    const keys = Object.keys(expertsData).sort();
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const expert = expertsData[key];
+      matrix.push(expert?.matrix || []);
+    }
+    return matrix;
+  };
+
   const handlePhoneReorder = (reorderedPhones, movedPhone, oldPosition, newPosition) => {
     const protocolEntry = `${movedPhone.phone} переміщений з позиції ${
       oldPosition + 1
@@ -80,7 +111,8 @@ export const SessionProvider = ({ children }) => {
         ...prevData[currentExpert],
         phones: reorderedPhones,
         protocol: [...prevData[currentExpert].protocol, protocolEntry],
-        matrix: matrixUpdate(reorderedPhones)
+        matrix: matrixUpdate(reorderedPhones),
+        ranks: generateRanks(reorderedPhones)
       }
     }));
     console.log(expertsData);
@@ -101,7 +133,8 @@ export const SessionProvider = ({ children }) => {
         ...prevData[currentExpert],
         phones: updatedPhones,
         protocol: [...prevData[currentExpert].protocol, protocolEntry],
-        matrix: matrixUpdate(updatedPhones)
+        matrix: matrixUpdate(updatedPhones),
+        ranks: generateRanks(updatedPhones)
       }
     }));
   };
@@ -188,9 +221,12 @@ export const SessionProvider = ({ children }) => {
         handleDataLoad,
         handleExpertChange,
         getCurrentExpertData,
+        getRankfromExpertData,
+        getMatrixFromExpertData,
         handlePhoneReorder,
         handlePhoneRemove,
         matrixUpdate,
+        generateRanks,
         exportRankingsToCSV
       }}
     >

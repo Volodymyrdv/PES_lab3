@@ -1,0 +1,109 @@
+/* Container */
+.rm-container {
+  padding: 16px;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #1f2937;
+}
+
+.rm-expertCard {
+  border: 1px solid #e6e9ee;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #ffffff;
+}
+
+.rm-expertTitle {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #264de4;
+  font-weight: 600;
+}
+
+.rm-ranksRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.rm-rankBadge {
+  flex: 1 1 0;
+  padding: 8px 10px;
+  text-align: center;
+  border-left: 1px solid #eef2f6;
+  color: #111827;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.rm-rankBadge:first-child {
+  border-left: none;
+}
+
+.rm-empty {
+  color: #6b7280;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+@media (max-width: 560px) {
+  .rm-ranksRow {
+    flex-direction: column;
+  }
+  .rm-rankBadge {
+    border-left: none;
+    border-top: 1px solid #eef2f6;
+  }
+  .rm-rankBadge:first-child {
+    border-top: none;
+  }
+}
+
+/* Table styles with dividing lines */
+.rm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  background: #fff;
+  border: 1px solid #e6e9ee;
+}
+.rm-table th,
+.rm-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e6e9ee; /* horizontal divider */
+  text-align: center;
+  font-size: 0.95rem;
+}
+.rm-table thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  border-bottom: 2px solid #dfe7ff;
+}
+
+/* Vertical separators between expert blocks: add right border to last column of each expert block */
+.rm-phoneHeader,
+.rm-expertHeader {
+  background: #fbfbfd;
+  color: #334155;
+}
+
+.rm-table td.rm-expertSum,
+.rm-table th.rm-phoneHeader {
+  border-right: 2px solid #e6e9ee;
+}
+
+.rm-expertSum {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.rm-total {
+  background: #fff7ed;
+  font-weight: 700;
+}
+
+.rm-max {
+  background: #fff1f2;
+  font-weight: 700;
+}

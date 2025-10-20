@@ -13,7 +13,6 @@ const App = () => {
     originalPhones,
     currentExpert,
     expertsCount,
-    expertsData,
     handleDataLoad,
     handleExpertChange,
     getCurrentExpertData,
