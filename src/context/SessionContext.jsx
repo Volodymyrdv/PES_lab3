@@ -35,7 +35,6 @@ export const SessionProvider = ({ children }) => {
     }
     for (let i = 0; i < n; i++) {
       for (let k = i; k > 0; k--) {
-        // assume phone ids start from 1
         m[newPhones[i].id - 1][newPhones[k - 1].id - 1] = -1;
       }
     }

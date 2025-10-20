@@ -1,0 +1,91 @@
+/* HammingMetric styles */
+.hm-container {
+  padding: 12px;
+}
+
+.hm-matrixWrapper {
+  overflow-x: auto;
+}
+
+.hm-table {
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+.hm-table td,
+.hm-table th {
+  border: 1px solid #000; /* black lines */
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.hm-colHeader {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+.hm-rowHeader {
+  background: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.hm-corner {
+  background: #fff;
+}
+
+.hm-expertBlock {
+  margin-bottom: 16px;
+}
+
+.hm-pre {
+  background: #f6f6f6;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.hm-criterion {
+  margin-top: 8px;
+}
+
+.export-button {
+  background: #0078d4;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.export-button:hover {
+  background: #005a9e;
+}
+
+.hm-cell {
+  min-width: 36px;
+}
+
+/* colorized cells for Hamming matrix */
+.hm-cell-green {
+  background: #6aa84f; /* green */
+  color: #fff;
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.hm-cell-red {
+  background: #e06666; /* red */
+  color: #fff;
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.hm-cell-white {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  padding: 6px 8px;
+  text-align: center;
+}

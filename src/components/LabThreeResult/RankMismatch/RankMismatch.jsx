@@ -71,35 +71,31 @@ const RankMismatch = ({ ranks, criterion }) => {
     const RANDOM_TRIES = 300;
     const LOCAL_IMPROVE_SWAPS = 500;
 
-    let perms = [];
-    let limited = false;
+    const crit = String(criterion || '')
+      .toLowerCase()
+      .trim();
+    const isMix = crit.includes('mix') || crit.includes('minmax') || crit === 'minmax';
+    const cmpAdd = (a, b) => a.total - b.total || a.max - b.max;
+    const cmpMix = (a, b) => a.max - b.max || a.total - b.total;
+    const comparator = isMix ? cmpMix : cmpAdd;
+    const objective = (row) => (isMix ? row.max : row.total);
 
     if (n <= 10) {
-      limited = false;
       const gen = generatePermutationsGenerator(base);
-
       const chunkSize = 2000;
       let best = [];
 
-      const crit = (String(criterion || '').toLowerCase() || 'additivity').trim();
-      const isMix = crit.includes('mix') || crit.includes('minmax') || crit === 'minmax';
-      const cmpAdd = (a, b) => a.total - b.total || a.max - b.max;
-      const cmpMix = (a, b) => a.max - b.max || a.total - b.total;
-      const comparator = isMix ? cmpMix : cmpAdd;
-
       const processChunk = async () => {
-        let count = 0;
         let next = gen.next();
-        const chunkResults = [];
+        let count = 0;
+        const chunk = [];
         while (!next.done && count < chunkSize) {
-          const perm = next.value;
-          const scoredRow = scorePermutation(perm);
-          chunkResults.push(scoredRow);
+          chunk.push(scorePermutation(next.value));
           count += 1;
           next = gen.next();
         }
 
-        best.push(...chunkResults);
+        best.push(...chunk);
         best.sort(comparator);
         if (best.length > TOP_K) best.length = TOP_K;
 
@@ -109,118 +105,99 @@ const RankMismatch = ({ ranks, criterion }) => {
             : Math.min(...best.map((r) => r.total))
           : undefined;
 
-        setPermutationResults((prev) => ({
-          ...(prev || {}),
+        setPermutationResults({
           n,
           scored: best.slice(),
           limited: false,
           minimal,
           mode: isMix ? 'minmax' : 'additivity'
-        }));
+        });
 
         if (!next.done) {
           await new Promise((res) => setTimeout(res, 0));
           return processChunk();
         }
-
-        return;
       };
 
       processChunk();
       return;
-    } else {
-      limited = true;
-      const candidates = [];
-      const seen = new Set();
-
-      const pushCandidate = (p) => {
-        const key = p.join(',');
-        if (!seen.has(key)) {
-          seen.add(key);
-          candidates.push(p.slice());
-        }
-      };
-
-      pushCandidate(base.slice());
-
-      const avg = [];
-      for (let obj = 1; obj <= n; obj++) {
-        let sum = 0;
-        let count = 0;
-        for (let ei = 0; ei < ranks.length; ei++) {
-          const v = Number(ranks[ei][obj - 1]);
-          if (Number.isFinite(v)) {
-            sum += v;
-            count++;
-          }
-        }
-        avg.push({ id: obj, avg: count ? sum / count : Number.POSITIVE_INFINITY });
-      }
-      const consensus = avg
-        .slice()
-        .sort((a, b) => a.avg - b.avg)
-        .map((x) => x.id);
-      pushCandidate(consensus);
-      pushCandidate(consensus.slice().reverse());
-
-      const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-      for (let t = 0; t < RANDOM_TRIES; t++) {
-        const p = base.slice();
-        for (let i = p.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [p[i], p[j]] = [p[j], p[i]];
-        }
-
-        // const objective = (row) => {
-        //   if (criterion === 'mixmax') return row.max;
-        //   return row.total;
-        // };
-
-        let best = p.slice();
-        let bestScore = objective(scorePermutation(best));
-        for (let iter = 0; iter < LOCAL_IMPROVE_SWAPS; iter++) {
-          const i = rand(0, n - 1);
-          const j = rand(0, n - 1);
-          if (i === j) continue;
-          [best[i], best[j]] = [best[j], best[i]];
-          const row = scorePermutation(best);
-          const val = objective(row);
-          if (val < bestScore) {
-            bestScore = val;
-            // keep swapped
-          } else {
-            // revert
-            [best[i], best[j]] = [best[j], best[i]];
-          }
-        }
-
-        pushCandidate(best);
-      }
-
-      perms = candidates;
     }
 
-    const scoredAll = perms.map((p) => scorePermutation(p));
-    const crit = (String(criterion || '').toLowerCase() || 'additivity').trim();
+    const candidates = [];
+    const seen = new Set();
+    const pushCandidate = (p) => {
+      const key = p.join(',');
+      if (!seen.has(key)) {
+        seen.add(key);
+        candidates.push(p.slice());
+      }
+    };
 
-    const isAdd = crit.startsWith('add');
-    const isMix = crit.includes('mix') || crit.includes('minmax') || crit === 'minmax';
+    pushCandidate(base.slice());
 
-    const cmpAdd = (a, b) => a.total - b.total || a.max - b.max;
-    const cmpMix = (a, b) => a.max - b.max || a.total - b.total;
+    const avg = [];
+    for (let obj = 1; obj <= n; obj++) {
+      let sum = 0;
+      let count = 0;
+      for (let ei = 0; ei < ranks.length; ei++) {
+        const v = Number(ranks[ei][obj - 1]);
+        if (Number.isFinite(v)) {
+          sum += v;
+          count++;
+        }
+      }
+      avg.push({ id: obj, avg: count ? sum / count : Number.POSITIVE_INFINITY });
+    }
+    const consensus = avg
+      .slice()
+      .sort((a, b) => a.avg - b.avg)
+      .map((x) => x.id);
+    pushCandidate(consensus);
+    pushCandidate(consensus.slice().reverse());
 
-    let scored = [];
-    if (isMix) {
-      scored = scoredAll.slice().sort(cmpMix).slice(0, TOP_K);
-    } else {
-      scored = scoredAll.slice().sort(cmpAdd).slice(0, TOP_K);
+    const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+    for (let t = 0; t < RANDOM_TRIES; t++) {
+      const p = base.slice();
+      for (let i = p.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [p[i], p[j]] = [p[j], p[i]];
+      }
+
+      let bestP = p.slice();
+      let bestScore = objective(scorePermutation(bestP));
+      for (let iter = 0; iter < LOCAL_IMPROVE_SWAPS; iter++) {
+        const i = rand(0, n - 1);
+        const j = rand(0, n - 1);
+        if (i === j) continue;
+        [bestP[i], bestP[j]] = [bestP[j], bestP[i]];
+        const row = scorePermutation(bestP);
+        const val = objective(row);
+        if (val < bestScore) {
+          bestScore = val;
+        } else {
+          [bestP[i], bestP[j]] = [bestP[j], bestP[i]];
+        }
+      }
+
+      pushCandidate(bestP);
     }
 
-    const minimal = isMix
-      ? scored.reduce((acc, r) => Math.min(acc, r.max), Number.POSITIVE_INFINITY)
-      : scored.reduce((acc, r) => Math.min(acc, r.total), Number.POSITIVE_INFINITY);
+    const scoredAll = candidates.map((p) => scorePermutation(p));
+    const scored = scoredAll.slice().sort(comparator).slice(0, TOP_K);
 
-    setPermutationResults({ n, scored, limited, minimal, mode: isMix ? 'minmax' : 'additivity' });
+    const minimal = scored.length
+      ? isMix
+        ? Math.min(...scored.map((r) => r.max))
+        : Math.min(...scored.map((r) => r.total))
+      : undefined;
+
+    setPermutationResults({
+      n,
+      scored,
+      limited: true,
+      minimal,
+      mode: isMix ? 'minmax' : 'additivity'
+    });
   };
 
   return (
@@ -248,7 +225,6 @@ const RankMismatch = ({ ranks, criterion }) => {
         </div>
       ))}
 
-      {/* Results table */}
       {permutationResults && permutationResults.error && (
         <div className='rm-empty'>{permutationResults.error}</div>
       )}
@@ -265,20 +241,6 @@ const RankMismatch = ({ ranks, criterion }) => {
 
           return (
             <div style={{ overflowX: 'auto' }}>
-              {permutationResults.minimal !== undefined && (
-                <div style={{ marginBottom: 8 }} className='rm-summary'>
-                  {permutationResults.mode === 'minmax' ? (
-                    <span>
-                      Мінімальний макс по експерту: <strong>{permutationResults.minimal}</strong>
-                    </span>
-                  ) : (
-                    <span>
-                      Мінімальна сумарна невідповідність:{' '}
-                      <strong>{permutationResults.minimal}</strong>
-                    </span>
-                  )}
-                </div>
-              )}
               <table className='rm-table'>
                 <thead>
                   <tr>
