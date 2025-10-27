@@ -204,7 +204,7 @@ const RankMismatch = ({ ranks, criterion }) => {
     <div className='rm-container'>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 12 }}>
         <button className='export-button' onClick={handleCalculate}>
-          Обчислити перестановки
+          Обчислити
         </button>
       </div>
 
