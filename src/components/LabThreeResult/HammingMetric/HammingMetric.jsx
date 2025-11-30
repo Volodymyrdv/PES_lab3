@@ -407,10 +407,9 @@ const HammingMetric = ({ matrix, criterion }) => {
             <thead>
               <tr>
                 <th>Перестановка</th>
-                <th>Perm upper-tri</th>
                 {matrix.map((_, ei) => (
                   <th key={ei} className='rm-expertHeader'>
-                    Експерт {ei + 1}
+                    Експерт {ei + 1} (Сума)
                   </th>
                 ))}
                 <th>СУМ</th>
@@ -422,9 +421,8 @@ const HammingMetric = ({ matrix, criterion }) => {
               {results.scored.map((row, idx) => (
                 <tr key={idx}>
                   <td style={{ whiteSpace: 'nowrap' }}>{row.permutation.join(' - ')}</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>{renderPermUpperTri(row.permutation)}</td>
                   {row.perExpertSums.map((s, i) => (
-                    <td key={i}>
+                    <td key={i} className='rm-expertSum'>
                       <strong>{s}</strong>
                     </td>
                   ))}

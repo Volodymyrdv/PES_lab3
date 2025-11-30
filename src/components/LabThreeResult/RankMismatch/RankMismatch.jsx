@@ -244,44 +244,25 @@ const RankMismatch = ({ ranks, criterion }) => {
               <table className='rm-table'>
                 <thead>
                   <tr>
-                    <th rowSpan={2}>Перестановка</th>
+                    <th>Перестановка</th>
                     {ranks.map((_, ei) => (
-                      <th key={ei} colSpan={permutationResults.n + 1} className='rm-expertHeader'>
-                        Експерт {ei + 1}
+                      <th key={ei} className='rm-expertHeader'>
+                        Експерт {ei + 1} (Сума)
                       </th>
                     ))}
-                    <th rowSpan={2}>СУМ</th>
-                    <th rowSpan={2}>Макс</th>
-                  </tr>
-                  <tr>
-                    {ranks.map((_, ei) =>
-                      phoneNames
-                        .map((name, k) => (
-                          <th key={`${ei}-${k}`} className='rm-phoneHeader'>
-                            {name}
-                          </th>
-                        ))
-                        .concat(
-                          <th key={`sum-${ei}`} className='rm-phoneHeader'>
-                            Сума
-                          </th>
-                        )
-                    )}
+                    <th>СУМ</th>
+                    <th>Макс</th>
                   </tr>
                 </thead>
                 <tbody>
                   {permutationResults.scored.map((row, i) => (
                     <tr key={i}>
                       <td>{row.permutation.join(' - ')}</td>
-                      {row.perExpertDiffs.map((expertDiff, ei) =>
-                        expertDiff.diffs
-                          .map((d, k) => <td key={`${ei}-${k}`}>{d}</td>)
-                          .concat(
-                            <td className='rm-expertSum' key={`sum-${ei}`}>
-                              <strong>{expertDiff.sum}</strong>
-                            </td>
-                          )
-                      )}
+                      {row.perExpertDiffs.map((expertDiff, ei) => (
+                        <td className='rm-expertSum' key={ei}>
+                          <strong>{expertDiff.sum}</strong>
+                        </td>
+                      ))}
                       <td className='rm-total'>
                         <strong>{row.total}</strong>
                       </td>
